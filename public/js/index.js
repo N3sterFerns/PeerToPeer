@@ -16,10 +16,6 @@ socket.on("notify", (notifyMsgData)=>{
     notifyPeer(notifyMsgData)
 })
 
-socket.on("sessionClosed", (closedMsg)=>{
-    
-})
-
 
 function notifyPeer(data) {
     notifyMsg.innerHTML = ""
