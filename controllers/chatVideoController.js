@@ -26,9 +26,13 @@ const chatVideoController = (io)=>{
         })
 
 
-            socket.on("message", ({roomId, message})=>{
-                socket.broadcast.to(roomId).emit("message", message)
-            })
+        socket.on("message", ({roomId, message})=>{
+            socket.broadcast.to(roomId).emit("message", message)
+        })
+
+        socket.on("typing", ({roomId})=>{
+            socket.broadcast.to(roomId).emit("typing")
+        })
         
         socket.on("disconnect", ()=>{
             console.log("User disconnected: ", socket.id);
