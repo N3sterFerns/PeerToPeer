@@ -150,7 +150,7 @@
     </style>
 </head>
 <body class="relative">
-    <div id="container" class="w-full flex flex-col h-screen relative">
+    <div id="container" class="w-full flex flex-col h-dvh relative">
         <%- include('partials/header') %>
 
         <div class="w-full hidden overflow-x-hidden fixed z-[9999] h-svh bg-gray-300">
@@ -184,7 +184,7 @@
         </div>
 
         <div id="chatPage" class="flex-1 overflow-x-hidden w-full relative bg-zinc-300 p-2">
-            <h2 class="absolute top-1/2 left-1/2 w-full text-center text-zinc-500 -translate-x-1/2 -translate-y-1/2 select-none nobody">Wait For Peer to Connect</h2>
+            <h2 class="fixed top-1/2 left-1/2 w-full text-center text-zinc-500 -translate-x-1/2 -translate-y-1/2 select-none nobody">Wait For Peer to Connect</h2>
             <!-- <div id="localMessage" class=" flex justify-end">
                 <div class="w-30 p-3 bg-blue-400 rounded-full">
                     <p class="text-xl font-semibold">Hii Babes</p>
@@ -207,13 +207,13 @@
                 </div>
             </div> -->
 
-            <div class="chat-bubble absolute left-2 bottom-2 hidden">
+            <!-- <div id="reply" class="chat-bubble absolute left-2 bottom-2 hidden">
                 <div class="typing">
                   <div class="dot"></div>
                   <div class="dot"></div>
                   <div class="dot"></div>
                 </div>
-            </div>
+            </div> -->
 
             <!-- <div id="toast-success" class="flex absolute left-1/2 -translate-x-1/2 items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow " role="alert">
                 <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg  ">
