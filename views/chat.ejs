@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.css" rel="stylesheet" /> -->
     <title>Chat Room</title>
 
     <style>
@@ -91,9 +92,64 @@
             border-bottom-left-radius: 10px;
             }
 
+
+            .chat-bubble {
+                background-color:#E6F8F1;
+                padding:6px 20px;
+                -webkit-border-radius: 20px;
+                /* -webkit-border-bottom-left-radius: 2px;
+                -moz-border-radius: 20px;
+                -moz-border-radius-bottomleft: 2px; */
+                border-radius: 20px;
+                /* border-bottom-left-radius: 2px; */
+                /* display:inline-block; */
+            }
+            .typing {
+                align-items: center;
+                display: flex;
+                height: 17px;
+            }
+            .typing .dot {
+                animation: mercuryTypingAnimation 1.8s infinite ease-in-out;
+                background-color: #6CAD96 ;
+                border-radius: 50%;
+                height: 7px;
+                margin-right: 4px;
+                vertical-align: middle;
+                width: 7px;
+                display: inline-block;
+            }
+            .typing .dot:nth-child(1) {
+                animation-delay: 200ms;
+            }
+            .typing .dot:nth-child(2) {
+                animation-delay: 300ms;
+            }
+            .typing .dot:nth-child(3) {
+                animation-delay: 400ms;
+            }
+            .typing .dot:last-child {
+                margin-right: 0;
+            }
+
+            @keyframes mercuryTypingAnimation {
+            0% {
+                transform: translateY(0px);
+                background-color:#6CAD96; 
+            }
+            28% {
+                transform: translateY(-7px);
+                background-color:#9ECAB9; 
+            }
+            44% {
+                transform: translateY(0px);
+                background-color: #B5D9CB; 
+            }
+            }
+
     </style>
 </head>
-<body>
+<body class="relative">
     <div id="container" class="w-full flex flex-col h-screen relative">
         <%- include('partials/header') %>
 
@@ -140,7 +196,7 @@
                 </div>
             </div> -->
 
-            <div id="localMessage" class="mine messages">
+            <!-- <div id="localMessage" class="mine messages">
                 <div class="message last">
                     Dude
                 </div>
@@ -149,16 +205,46 @@
                 <div class="message last">
                 Hello, how's it going?
                 </div>
+            </div> -->
+
+            <div class="chat-bubble absolute left-2 bottom-2 hidden">
+                <div class="typing">
+                  <div class="dot"></div>
+                  <div class="dot"></div>
+                  <div class="dot"></div>
+                </div>
             </div>
+
+            <!-- <div id="toast-success" class="flex absolute left-1/2 -translate-x-1/2 items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow " role="alert">
+                <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg  ">
+                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+                    </svg>
+                    <span class="sr-only">icon</span>
+                </div>
+                <div class="ms-3 text-sm  text-green-600 font-semibold">Item moved successfully.</div>
+                <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 " data-dismiss-target="#toast-success" aria-label="Close">
+                    <span class="sr-only">Close</span>
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                </button>
+            </div> -->
+
+
+
+
+              
         </div>
 
-        <form action="#" class="flex w-full py-4 bg-white sm:px-3">
-            <input class="w-full py-2 outline-none text-xl px-1" type="text" placeholder="Enter Your Message">
+        <form id="msgContainer" class="flex w-full py-4 px-2 bg-white sm:px-3">
+            <input id="msg" class="w-full py-2  outline-none text-xl px-1" type="text" placeholder="Enter Your Message">
             <button class="py-2 px-3 sm:px-5 text-xl rounded-md bg-blue-500 text-white font-bold flex items-center gap-2" type="submit">Send <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z"/></svg></button>
         </form>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="js/index.js"></script>
+    <script  src="js/index.js"></script>
 </body>
 </html>

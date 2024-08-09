@@ -4,9 +4,8 @@ const chatVideoController = (io)=>{
     let waitingUsers = []
 
     io.on("connection", (socket)=>{
-        
-        if(waitingUsers.length > 0){
-            try {
+        socket.on("joinedRoom", ()=>{
+            if(waitingUsers.length > 0){
                 let me = waitingUsers.shift();
                 let partner = socket;
     
@@ -18,16 +17,18 @@ const chatVideoController = (io)=>{
                 me.roomId = roomId;
                 partner.roomId = roomId;
     
-                socket.emit("joinedRoom", roomId)
-                socket.on("notify", (notifymsg)=>{
-                    io.to(roomId).emit("notify", notifymsg)
-                })
-            } catch (error) {
-                console.log(error);
+                io.to(roomId).emit("joined", roomId)
+
+                io.to(roomId).emit("notify", {exit: false, message: "Peer has Joined"})
+            }else{
+                waitingUsers.push(socket)
             }
-        }else{
-            waitingUsers.push(socket)
-        }
+        })
+
+
+            socket.on("message", ({roomId, message})=>{
+                socket.broadcast.to(roomId).emit("message", message)
+            })
         
         socket.on("disconnect", ()=>{
             console.log("User disconnected: ", socket.id);
@@ -35,7 +36,7 @@ const chatVideoController = (io)=>{
             waitingUsers.splice(userIdIndex, 1)
 
             if(socket.roomId){
-                socket.to(socket.roomId).emit("notify", "Peer has left the chat, Refresh to connect with a new peer. ")
+                socket.to(socket.roomId).emit("notify", {exit: true, message: "Peer has left the chat, Refresh to connect with a new peer."})
             }
         })
     })
