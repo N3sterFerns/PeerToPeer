@@ -178,4 +178,4 @@ function successToast(message) {
     setTimeout(() => {
         chatPage.removeChild(toast);
     }, 1500);
-
+}
