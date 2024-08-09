@@ -27,7 +27,7 @@ msgContainer.addEventListener("submit", (e)=>{
     console.log(roomId);
     socket.emit("message", {roomId, message})
     inputMsg.value = ""
-    msgContainer.scrollTo = msgContainer.scrollHeight;
+    chatPage.scrollTo = chatPage.scrollHeight;
 })
 
 socket.on("notify", ({exit, message})=>{
@@ -61,7 +61,7 @@ function typing() {
         // Create the outer container
         replyDiv = document.createElement('div');
         replyDiv.id = 'reply';
-        replyDiv.className = 'chat-bubble absolute left-2 bottom-2';
+        replyDiv.className = 'chat-bubble fixed left-2 bottom-20 z-[999]';
 
         // Create the typing container
         const typingDiv = document.createElement('div');
@@ -98,6 +98,7 @@ function typing() {
     }, 1000);
 }
 
+
 function notifyPeer(exit=false, msg) {
     if(exit){
         notifyMsg.innerHTML = ""
@@ -132,6 +133,7 @@ function recieverMsg(msg) {
     messageDiv.textContent = msg;
     remoteMessageDiv.appendChild(messageDiv);
     chatPage.appendChild(remoteMessageDiv);
+    chatPage.scrollTo = chatPage.scrollHeight;
 }
 
 
