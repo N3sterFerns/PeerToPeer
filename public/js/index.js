@@ -2,6 +2,7 @@ const notifyMsg = document.querySelector(".nobody")
 const chatPage = document.querySelector("#chatPage")
 const msgContainer = document.querySelector("#msgContainer")
 const inputMsg = document.querySelector("#msg")
+const reply = document.querySelector("#reply")
 
 // const mainPage = document.querySelector("#mainPage")
 // const {showDangerToast} = require('./alert.js')
@@ -26,6 +27,7 @@ msgContainer.addEventListener("submit", (e)=>{
     console.log(roomId);
     socket.emit("message", {roomId, message})
     inputMsg.value = ""
+    msgContainer.scrollTo = msgContainer.scrollHeight;
 })
 
 socket.on("notify", ({exit, message})=>{
@@ -39,7 +41,62 @@ socket.on("message", (msg)=>{
 
 
 
+inputMsg.addEventListener("input", ()=>{
+    if (inputMsg.value.trim()) {
+        socket.emit("typing", { roomId });
+    } else {
+        // Handle the case where input is cleared
+        socket.emit("typing", { roomId }); // Could be optimized to avoid unnecessary emissions
+    }
+})
 
+socket.on("typing", ()=>{
+    typing()
+})
+
+function typing() {
+    let replyDiv = document.getElementById('reply');
+
+    if (!replyDiv) {
+        // Create the outer container
+        replyDiv = document.createElement('div');
+        replyDiv.id = 'reply';
+        replyDiv.className = 'chat-bubble absolute left-2 bottom-2';
+
+        // Create the typing container
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'typing';
+
+        // Create the dot elements
+        const dot1 = document.createElement('div');
+        dot1.className = 'dot';
+        const dot2 = document.createElement('div');
+        dot2.className = 'dot';
+        const dot3 = document.createElement('div');
+        dot3.className = 'dot';
+
+        // Append the dot elements to the typing container
+        typingDiv.appendChild(dot1);
+        typingDiv.appendChild(dot2);
+        typingDiv.appendChild(dot3);
+
+        // Append the typing container to the outer container
+        replyDiv.appendChild(typingDiv);
+
+        // Append the outer container to the body or another parent element
+        chatPage.appendChild(replyDiv);
+    } else {
+        // Make sure it's visible
+        replyDiv.classList.remove('hidden');
+    }
+
+    // Automatically hide typing indicator after some time
+    setTimeout(() => {
+        if (replyDiv) {
+            replyDiv.classList.add('hidden');
+        }
+    }, 1000);
+}
 
 function notifyPeer(exit=false, msg) {
     if(exit){
@@ -63,6 +120,7 @@ function senderMsg(msg) {
     messageDiv.textContent = msg;
     localMessageDiv.appendChild(messageDiv);
     chatPage.appendChild(localMessageDiv);
+    chatPage.scrollTop = chatPage.scrollHeight;
 }
 
 function recieverMsg(msg) {
@@ -121,12 +179,3 @@ function successToast(message) {
         chatPage.removeChild(toast);
     }, 1500);
 }
-
-
-
-
-
-
-
-
-

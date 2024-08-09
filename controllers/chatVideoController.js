@@ -1,4 +1,3 @@
-
 const chatVideoController = (io)=>{
 
     let waitingUsers = []
