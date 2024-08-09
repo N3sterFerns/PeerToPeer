@@ -2,6 +2,7 @@
   "name": "peertopeer",
   "version": "1.0.0",
   "main": "app.js",
+  "type": "commonjs",
   "scripts": {
     "start": "nodemon app.js",
     "build:css": "npx tailwindcss -i ./public/css/tailwind.css -o ./public/css/style.css --watch"
