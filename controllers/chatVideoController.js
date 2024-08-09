@@ -6,20 +6,20 @@ const chatVideoController = (io)=>{
     io.on("connection", (socket)=>{
         socket.on("joinedRoom", ()=>{
             if(waitingUsers.length > 0){
-                    let me = waitingUsers.shift();
-                    let partner = socket;
-        
-                    let roomId = `${me.id}-${partner.id}`;
-        
-                    me.join(roomId)
-                    partner.join(roomId)
+                let me = waitingUsers.shift();
+                let partner = socket;
     
-                    me.roomId = roomId;
-                    partner.roomId = roomId;
-        
-                    io.to(roomId).emit("joined", roomId)
+                let roomId = `${me.id}-${partner.id}`;
+    
+                me.join(roomId)
+                partner.join(roomId)
 
-                    io.to(roomId).emit("notify", {exit: false, message: "Peer has Joined"})
+                me.roomId = roomId;
+                partner.roomId = roomId;
+    
+                io.to(roomId).emit("joined", roomId)
+
+                io.to(roomId).emit("notify", {exit: false, message: "Peer has Joined"})
             }else{
                 waitingUsers.push(socket)
             }
