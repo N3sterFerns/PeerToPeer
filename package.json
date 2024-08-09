@@ -2,6 +2,9 @@
   "name": "peertopeer",
   "version": "1.0.0",
   "main": "app.js",
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
     "start": "nodemon app.js",
     "build:css": "npx tailwindcss -i ./public/css/tailwind.css -o ./public/css/style.css --watch"
