@@ -91,6 +91,61 @@
             border-bottom-left-radius: 10px;
             }
 
+
+            .chat-bubble {
+                background-color:#E6F8F1;
+                padding:6px 20px;
+                -webkit-border-radius: 20px;
+                /* -webkit-border-bottom-left-radius: 2px;
+                -moz-border-radius: 20px;
+                -moz-border-radius-bottomleft: 2px; */
+                border-radius: 20px;
+                /* border-bottom-left-radius: 2px; */
+                display:inline-block;
+            }
+            .typing {
+                align-items: center;
+                display: flex;
+                height: 17px;
+            }
+            .typing .dot {
+                animation: mercuryTypingAnimation 1.8s infinite ease-in-out;
+                background-color: #6CAD96 ;
+                border-radius: 50%;
+                height: 7px;
+                margin-right: 4px;
+                vertical-align: middle;
+                width: 7px;
+                display: inline-block;
+            }
+            .typing .dot:nth-child(1) {
+                animation-delay: 200ms;
+            }
+            .typing .dot:nth-child(2) {
+                animation-delay: 300ms;
+            }
+            .typing .dot:nth-child(3) {
+                animation-delay: 400ms;
+            }
+            .typing .dot:last-child {
+                margin-right: 0;
+            }
+
+            @keyframes mercuryTypingAnimation {
+            0% {
+                transform: translateY(0px);
+                background-color:#6CAD96; 
+            }
+            28% {
+                transform: translateY(-7px);
+                background-color:#9ECAB9; 
+            }
+            44% {
+                transform: translateY(0px);
+                background-color: #B5D9CB; 
+            }
+            }
+
     </style>
 </head>
 <body>
@@ -140,7 +195,7 @@
                 </div>
             </div> -->
 
-            <div id="localMessage" class="mine messages">
+            <!-- <div id="localMessage" class="mine messages">
                 <div class="message last">
                     Dude
                 </div>
@@ -149,11 +204,22 @@
                 <div class="message last">
                 Hello, how's it going?
                 </div>
+            </div> -->
+
+            <div class="chat-bubble absolute left-2 bottom-2 hidden">
+                <div class="typing">
+                  <div class="dot"></div>
+                  <div class="dot"></div>
+                  <div class="dot"></div>
+                </div>
             </div>
+
+
+              
         </div>
 
-        <form action="#" class="flex w-full py-4 bg-white sm:px-3">
-            <input class="w-full py-2 outline-none text-xl px-1" type="text" placeholder="Enter Your Message">
+        <form id="msgContainer" class="flex w-full py-4 bg-white sm:px-3">
+            <input id="msg" class="w-full py-2 outline-none text-xl px-1" type="text" placeholder="Enter Your Message">
             <button class="py-2 px-3 sm:px-5 text-xl rounded-md bg-blue-500 text-white font-bold flex items-center gap-2" type="submit">Send <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z"/></svg></button>
         </form>
     </div>
