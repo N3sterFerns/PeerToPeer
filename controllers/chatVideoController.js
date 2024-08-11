@@ -26,11 +26,24 @@ const chatVideoController = (io)=>{
 
 
         socket.on("message", ({roomId, message})=>{
-            socket.broadcast.to(roomId).emit("message", message)
+            socket.to(roomId).broadcast.emit("message", message)
         })
-
+        
         socket.on("typing", ({roomId})=>{
             socket.broadcast.to(roomId).emit("typing")
+        })
+        
+        socket.on("signalingMessage", (data)=>{
+            const {roomId, message} = data;
+            socket.broadcast.to(roomId).emit("signalingMessage",message)
+        })
+
+        socket.on("startVideoCall", (roomId)=>{
+            socket.broadcast.to(roomId).emit("incomingCall")
+        })
+
+        socket.on("accept-call", ({roomId})=>{
+            socket.broadcast.to(roomId).emit("callAccepted")
         })
         
         socket.on("disconnect", ()=>{

@@ -153,7 +153,7 @@
     <div id="container" class="w-full flex flex-col h-dvh relative">
         <%- include('partials/header') %>
 
-        <div class="w-full hidden overflow-x-hidden fixed z-[9999] h-svh bg-gray-300">
+        <div id="video-call-con" class="w-full hidden overflow-x-hidden fixed z-[9999] h-svh bg-gray-300">
             <div class="grid grid-cols-1 h-screen md:grid-cols-2" id="videos">
                 <video class="w-full h-full object-cover bg-red-300" class="video-media" id="localVideo" autoplay playsinline></video>
                 <video class="w-full h-full object-cover bg-yellow-300" class="video-media" id="remoteVideo" autoplay playsinline></video>

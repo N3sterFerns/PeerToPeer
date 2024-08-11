@@ -2,7 +2,14 @@ const notifyMsg = document.querySelector(".nobody")
 const chatPage = document.querySelector("#chatPage")
 const msgContainer = document.querySelector("#msgContainer")
 const inputMsg = document.querySelector("#msg")
-const reply = document.querySelector("#reply")
+const localVideo = document.querySelector("#localVideo")
+const remoteVideo = document.querySelector("#remoteVideo")
+const videoCallCon = document.querySelector("#video-call-con")
+const videoCall = document.querySelector("#video-call")
+const incomingCall = document.querySelector("#incoming-call")
+const rejectCall = document.querySelector("#reject-call")
+const acceptCall = document.querySelector("#accept-call")
+
 
 // const mainPage = document.querySelector("#mainPage")
 // const {showDangerToast} = require('./alert.js')
@@ -10,6 +17,15 @@ const reply = document.querySelector("#reply")
 
 let socket = io()
 let roomId;
+let localPeer;
+let remotePeer;
+let peerConnection;
+let inCall = false;
+const configrations = {
+    iceServers:[
+        {urls: "stun:stun.l.google.com:19302"}
+    ]
+}
 
 
 socket.emit("joinedRoom")
@@ -45,14 +61,149 @@ inputMsg.addEventListener("input", ()=>{
     if (inputMsg.value.trim()) {
         socket.emit("typing", { roomId });
     } else {
-        // Handle the case where input is cleared
-        socket.emit("typing", { roomId }); // Could be optimized to avoid unnecessary emissions
+        socket.emit("typing", { roomId }); 
     }
 })
 
 socket.on("typing", ()=>{
     typing()
 })
+
+
+// Video Call Feature
+
+// for local input device access
+async function initialize() { 
+    try {
+        socket.on("signalingMessage", handleSignaling)
+        localPeer = await navigator.mediaDevices.getUserMedia({audio: true}) // video is still left to add;
+        localVideo.srcObject = localPeer;
+        initializeOffer()
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+// initializeOffer for local peer
+async function initializeOffer() {
+    try {
+        await createPeerConnection()
+        let offer = await peerConnection.createOffer()
+        await peerConnection.setLocalDescription(offer)
+        socket.emit("signalingMessage", {roomId, message: JSON.stringify({type: "offer", offer})})
+        inCall = true;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+// to create a peer connection
+async function createPeerConnection() {
+    try {
+        peerConnection = new RTCPeerConnection(configrations)
+
+        remotePeer = new MediaStream()
+        remoteVideo.srcObject = remotePeer;
+
+        localPeer.getTracks().forEach((track)=> {
+            peerConnection.addTrack(track, localPeer)
+        })
+
+        peerConnection.ontrack = (event)=>{
+            event.streams[0]?.getTracks().forEach((track)=>remotePeer.addTrack(track))
+            
+        }
+
+        peerConnection.onicecandidate = (e)=>{
+            if(e.candidate){
+                socket.emit("signalingMessage", {roomId, message: JSON.stringify({type: "candidate", candidate: e.candidate})})
+            }
+        }
+
+        peerConnection.onconnectionstatechange = (e)=>{
+            console.log("Connection Changed: ", e.connectionState);
+        }
+
+        console.log(peerConnection);
+    } catch (error) {
+        console.log(error);
+    } 
+}
+
+
+async function handleSignaling(data) {
+    const {type, offer, answer, candidate} = JSON.parse(data)
+    
+    switch (type) {
+        case "offer":
+            handleOffer(offer)
+            break;
+        case "answer":     
+            handleAnswer(answer)
+            break;
+        case "candidate":
+            if(type === candidate && peerConnection){
+                await peerConnection.addIceCandidate(candidate)
+            }
+            break;
+    
+    }
+
+}
+
+
+async function handleOffer(offer) {
+    try {
+        await createPeerConnection()
+        await peerConnection.setRemoteDescription(offer)
+        const answer = await peerConnection.createAnswer()
+        await peerConnection.setLocalDescription(answer)
+        socket.emit("signalingMessage", {roomId, message: JSON.stringify({type: "answer", answer})})
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function handleAnswer(answer) {
+    try {
+        if(answer){
+            await peerConnection.setRemoteDescription(answer)
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+videoCall.addEventListener("click", ()=>{
+    if(inCall) return;
+    socket.emit("startVideoCall", roomId)
+    // videoCallCon.classList.remove("hidden")
+})
+
+
+socket.on("incomingCall", ()=>{
+    incomingCall.classList.remove("hidden")
+})
+
+acceptCall.addEventListener("click", ()=>{
+    incomingCall.classList.add("hidden")
+    initialize()
+    videoCallCon.classList.remove("hidden")
+    socket.emit("accept-call", {roomId})
+})
+
+socket.on("callAccepted", ()=>{
+    initialize();
+    videoCallCon.classList.remove("hidden")
+})
+
+
+// false 
+
+
+
 
 function typing() {
     let replyDiv = document.getElementById('reply');
@@ -135,8 +286,6 @@ function recieverMsg(msg) {
     chatPage.appendChild(remoteMessageDiv);
     chatPage.scrollTo = chatPage.scrollHeight;
 }
-
-
 
 function successToast(message) {
     // Create the main toast container
