@@ -76,7 +76,7 @@ socket.on("typing", ()=>{
 async function initialize() { 
     try {
         socket.on("signalingMessage", handleSignaling)
-        localPeer = await navigator.mediaDevices.getUserMedia({audio: true}) // video is still left to add;
+        localPeer = await navigator.mediaDevices.getUserMedia({audio: true, video: true}) // video is still left to add;
         localVideo.srcObject = localPeer;
         initializeOffer()
     } catch (error) {
