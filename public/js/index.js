@@ -110,7 +110,12 @@ async function createPeerConnection() {
         })
 
         peerConnection.ontrack = (event)=>{
-            event.streams[0]?.getTracks().forEach((track)=>remotePeer.addTrack(track))
+            event.streams[0]?.getTracks().forEach((track)=>{
+                remotePeer.addTrack(track)
+                // if (!remotePeer.getTracks().some(t => t.id === track.id)) {
+                //     remotePeer.addTrack(track);
+                // }
+            })
             
         }
 
@@ -142,7 +147,7 @@ async function handleSignaling(data) {
             handleAnswer(answer)
             break;
         case "candidate":
-            if(type === candidate && peerConnection){
+            if(type === "candidate" && peerConnection){
                 await peerConnection.addIceCandidate(candidate)
             }
             break;
