@@ -25,8 +25,8 @@ const chatVideoController = (io)=>{
         })
 
 
-        socket.on("message", ({roomId, message})=>{
-            socket.to(roomId).broadcast.emit("message", message)
+        socket.on("message", ({roomId, message})=>{     
+            socket.broadcast.to(roomId).emit("message", message)
         })
         
         socket.on("typing", ({roomId})=>{
