@@ -9,7 +9,15 @@ const videoCall = document.querySelector("#video-call")
 const incomingCall = document.querySelector("#incoming-call")
 const rejectCall = document.querySelector("#reject-call")
 const acceptCall = document.querySelector("#accept-call")
+const cancelCallIcon = document.querySelector("#cancelCallIcon")
 
+const muteVideo = document.querySelector("#muteVideo")
+const unMuteBtn = document.querySelector("#unmute")
+const muteBtn = document.querySelector("#mute")
+
+const showVideo = document.querySelector("#showVideo")
+const hideVideo = document.querySelector("#hideVideo")
+const hideVideoIcon = document.querySelector("#hideVideoIcon")
 
 // const mainPage = document.querySelector("#mainPage")
 // const {showDangerToast} = require('./alert.js')
@@ -32,6 +40,7 @@ socket.emit("joinedRoom")
 
 socket.on("joined", (id)=>{
     roomId = id;
+    videoCall.classList.remove("select-none", "opacity-75")
 })
 
 
@@ -46,8 +55,8 @@ msgContainer.addEventListener("submit", (e)=>{
     chatPage.scrollTo = chatPage.scrollHeight;
 })
 
-socket.on("notify", ({exit, message})=>{
-    notifyPeer(exit, message)
+socket.on("notify", ({exit, message, type})=>{
+    notifyPeer(exit, message, type)
 })
 
 
@@ -75,59 +84,79 @@ socket.on("typing", ()=>{
 // for local input device access
 async function initialize() { 
     try {
-        socket.on("signalingMessage", handleSignaling)
-        localPeer = await navigator.mediaDevices.getUserMedia({audio: true}) // video is still left to add;
+        socket.on("signalingMessage", handleSignaling);
+        localPeer = await navigator.mediaDevices.getUserMedia({audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+        }, video: true}); 
         localVideo.srcObject = localPeer;
-        initializeOffer()
+        initializeOffer();
+        muteControls(localPeer)
+        muteControls(remotePeer)
+        hideVideos(localPeer)
+        // hideVideos(remotePeer)
     } catch (error) {
         console.log(error);
     }
 }
 
-// initializeOffer for local peer
+// Initialize offer for local peer
 async function initializeOffer() {
     try {
-        await createPeerConnection()
-        let offer = await peerConnection.createOffer()
-        await peerConnection.setLocalDescription(offer)
-        socket.emit("signalingMessage", {roomId, message: JSON.stringify({type: "offer", offer})})
+        await createPeerConnection();
+        let offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        socket.emit("signalingMessage", {roomId, message: JSON.stringify({type: "offer", offer})});
         inCall = true;
     } catch (error) {
         console.log(error);
     }
 }
 
-// to create a peer connection
+// To create a peer connection
 async function createPeerConnection() {
     try {
-        peerConnection = new RTCPeerConnection(configrations)
+        peerConnection = new RTCPeerConnection(configrations);
 
-        remotePeer = new MediaStream()
+        // Create and set a MediaStream for the remote peer
+        remotePeer = new MediaStream();
         remoteVideo.srcObject = remotePeer;
 
-        localPeer.getTracks().forEach((track)=> {
-            peerConnection.addTrack(track, localPeer)
-        })
+        // Add local tracks to the peer connection
+        localPeer.getTracks().forEach((track) => {
+            peerConnection.addTrack(track, localPeer);
+        });
 
-        peerConnection.ontrack = (event)=>{
-            event.streams[0]?.getTracks().forEach((track)=>{
-                remotePeer.addTrack(track)
-                // if (!remotePeer.getTracks().some(t => t.id === track.id)) {
-                //     remotePeer.addTrack(track);
-                // }
-            })
-            
-        }
-
-        peerConnection.onicecandidate = (e)=>{
-            if(e.candidate){
-                socket.emit("signalingMessage", {roomId, message: JSON.stringify({type: "candidate", candidate: e.candidate})})
+        // Handle incoming tracks from the remote peer
+        peerConnection.ontrack = (event) => {
+            if (event.streams && event.streams[0]) {
+                event.streams[0].getTracks().forEach((track) => {
+                    // Avoid adding the same track multiple times
+                    if (!remotePeer.getTracks().some(t => t.id === track.id)) {
+                        remotePeer.addTrack(track);
+                    }
+                });
             }
-        }
+        };
 
-        peerConnection.onconnectionstatechange = (e)=>{
+        // Handle ICE candidates
+        peerConnection.onicecandidate = (e) => {
+            if (e.candidate) {
+                socket.emit("signalingMessage", {
+                    roomId,
+                    message: JSON.stringify({
+                        type: "candidate",
+                        candidate: e.candidate
+                    })
+                });
+            }
+        };
+
+        // Log connection state changes
+        peerConnection.onconnectionstatechange = (e) => {
             console.log("Connection Changed: ", e.connectionState);
-        }
+        };
 
         console.log(peerConnection);
     } catch (error) {
@@ -135,77 +164,138 @@ async function createPeerConnection() {
     } 
 }
 
-
+// Handle signaling messages
 async function handleSignaling(data) {
-    const {type, offer, answer, candidate} = JSON.parse(data)
-    
+    const {type, offer, answer, candidate} = JSON.parse(data);
+
     switch (type) {
         case "offer":
-            handleOffer(offer)
+            handleOffer(offer);
             break;
-        case "answer":     
-            handleAnswer(answer)
+        case "answer":
+            handleAnswer(answer);
             break;
         case "candidate":
-            if(type === "candidate" && peerConnection){
-                await peerConnection.addIceCandidate(candidate)
+            if (type === "candidate" && peerConnection) {
+                await peerConnection.addIceCandidate(candidate);
             }
             break;
-    
+        case "close":
+            connectionClose()
     }
-
 }
 
-
+// Handle offer
 async function handleOffer(offer) {
     try {
-        await createPeerConnection()
-        await peerConnection.setRemoteDescription(offer)
-        const answer = await peerConnection.createAnswer()
-        await peerConnection.setLocalDescription(answer)
-        socket.emit("signalingMessage", {roomId, message: JSON.stringify({type: "answer", answer})})
-
+        await createPeerConnection();
+        await peerConnection.setRemoteDescription(offer);
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+        socket.emit("signalingMessage", {roomId, message: JSON.stringify({type: "answer", answer})});
     } catch (error) {
         console.log(error);
     }
 }
 
+// Handle answer
 async function handleAnswer(answer) {
     try {
-        if(answer){
-            await peerConnection.setRemoteDescription(answer)
+        if (answer) {
+            await peerConnection.setRemoteDescription(answer);
         }
     } catch (error) {
         console.log(error);
     }
 }
 
+// Event listeners for call control
+videoCall.addEventListener("click", () => {
+    if (inCall) return;
+    socket.emit("startVideoCall", roomId);
+    videoCall.classList.add("select-none", "opacity-75")
+    // videoCallCon.classList.remove("hidden");
+});
 
-videoCall.addEventListener("click", ()=>{
-    if(inCall) return;
-    socket.emit("startVideoCall", roomId)
-    // videoCallCon.classList.remove("hidden")
-})
+socket.on("incomingCall", () => {
+    incomingCall.classList.remove("hidden");
+});
 
-
-socket.on("incomingCall", ()=>{
-    incomingCall.classList.remove("hidden")
-})
-
-acceptCall.addEventListener("click", ()=>{
-    incomingCall.classList.add("hidden")
-    initialize()
-    videoCallCon.classList.remove("hidden")
-    socket.emit("accept-call", {roomId})
-})
-
-socket.on("callAccepted", ()=>{
+acceptCall.addEventListener("click", () => {
+    incomingCall.classList.add("hidden");
     initialize();
-    videoCallCon.classList.remove("hidden")
+    videoCallCon.classList.remove("hidden");
+    videoCall.classList.remove("select-none", "opacity-75")
+    socket.emit("accept-call", {roomId});
+});
+
+rejectCall.addEventListener("click", ()=>{
+    incomingCall.classList.add("hidden")
+    socket.emit("call-rejected", {roomId})
+})
+
+socket.on("call-rejected", ({exit, message})=>{
+    videoCall.classList.remove("select-none", "opacity-75")
+    notifyPeer(exit, message)
+})
+
+socket.on("callAccepted", () => {
+    initialize();
+    videoCallCon.classList.remove("hidden");
+    videoCall.classList.remove("select-none", "opacity-75")
+});
+
+cancelCallIcon.addEventListener("click", ()=>{
+    connectionClose()
+    socket.emit("signalingMessage", {roomId, message: JSON.stringify({type: "close"})})
 })
 
 
-// false 
+
+function toggleAudio(stream, isMuted){
+    const audioTrack = stream.getAudioTracks()
+    if(audioTrack.length > 0){
+        audioTrack.forEach((track)=> track.enabled = !isMuted)
+    }
+}
+
+
+function toggleVideo(stream, shouldDisable) {
+    const videoTracks = stream.getVideoTracks() 
+    videoTracks.forEach((track)=> track.enabled = !shouldDisable)
+}
+
+
+function muteControls(currentStream) {
+    let muteStatus = false;
+    muteVideo.addEventListener("click", ()=>{
+        muteStatus = !muteStatus;
+        toggleAudio(currentStream, muteStatus)
+        if(muteStatus){
+            muteBtn.classList.remove("hidden")
+            unMuteBtn.classList.add("hidden")
+        }else{
+            muteBtn.classList.add("hidden")
+            unMuteBtn.classList.remove("hidden")
+        }
+    })  
+}
+
+
+function hideVideos(currentVideoStream) {
+    let hideVideoStatus = false;
+    hideVideoIcon.addEventListener("click", ()=>{
+        hideVideoStatus = !hideVideoStatus;
+        toggleVideo(currentVideoStream, hideVideoStatus)
+        if(hideVideoStatus){
+            showVideo.classList.add("hidden")
+            hideVideo.classList.remove("hidden")
+        }else{
+            showVideo.classList.remove("hidden")
+            hideVideo.classList.add("hidden")
+        }
+    })
+}
 
 
 
@@ -255,7 +345,7 @@ function typing() {
 }
 
 
-function notifyPeer(exit=false, msg) {
+function notifyPeer(exit=false, msg, type) {
     if(exit){
         notifyMsg.innerHTML = ""
         notifyMsg.innerHTML = msg
@@ -263,7 +353,7 @@ function notifyPeer(exit=false, msg) {
     }else{
         notifyMsg.innerHTML = ""
         notifyMsg.innerHTML = msg
-        successToast(msg)
+        successToast(msg, type)
     }
 }
 
@@ -292,16 +382,16 @@ function recieverMsg(msg) {
     chatPage.scrollTo = chatPage.scrollHeight;
 }
 
-function successToast(message) {
+function successToast(message, type) {
     // Create the main toast container
     const toast = document.createElement('div');
-    toast.id = 'toast-success';
+    toast.id = `toast-${type}`;
     toast.className = 'flex absolute left-1/2 -translate-x-1/2 items-center w-full max-w-xs p-4 py-3 mb-4 text-gray-500 bg-white rounded-lg shadow';
     toast.setAttribute('role', 'alert');
 
     // Create the icon container
     const iconContainer = document.createElement('div');
-    iconContainer.className = 'inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg';
+    iconContainer.className = `inline-flex items-center justify-center flex-shrink-0 w-8 h-8 ${type==="success"? "text-green-500 bg-green-100 rounded-lg": "text-red-500 bg-red-100 rounded-lg"} `;
     
     // Create the SVG icon
     const svgIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -319,7 +409,7 @@ function successToast(message) {
     
     // Create the text container
     const textContainer = document.createElement('div');
-    textContainer.className = 'ms-3 text-sm text-green-600 font-semibold';
+    textContainer.className = `ms-3 text-sm ${type==="success"? "text-green-600": "text-red-600"} font-semibold`;
     textContainer.textContent = message;
     
     // Append all elements to the toast container
@@ -334,4 +424,15 @@ function successToast(message) {
     setTimeout(() => {
         chatPage.removeChild(toast);
     }, 1500);
+}
+
+
+function connectionClose() {
+    if(peerConnection){
+        peerConnection.close()
+        peerConnection = null
+        videoCallCon.classList.add("hidden");
+        // videoCall.classList.remove("select-none", "opacity-75")
+        localPeer.getTracks().forEach((track)=> track.stop())
+    }
 }

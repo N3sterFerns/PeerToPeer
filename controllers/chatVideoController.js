@@ -18,7 +18,7 @@ const chatVideoController = (io)=>{
     
                 io.to(roomId).emit("joined", roomId)
 
-                io.to(roomId).emit("notify", {exit: false, message: "Peer has Joined"})
+                io.to(roomId).emit("notify", {exit: false, message: "Peer has Joined", type: "success"})
             }else{
                 waitingUsers.push(socket)
             }
@@ -42,8 +42,16 @@ const chatVideoController = (io)=>{
             socket.broadcast.to(roomId).emit("incomingCall")
         })
 
+        socket.on("call-rejected", ({roomId})=>{
+            socket.broadcast.to(roomId).emit("call-rejected", {exit: false, message: "Peer Rejected the call", type: "danger"})
+        })
+
         socket.on("accept-call", ({roomId})=>{
             socket.broadcast.to(roomId).emit("callAccepted")
+        })
+
+        socket.on("connectionClosed", ({roomId})=>{
+            socket.broadcast.to(roomId).emit("connectionClosed")
         })
         
         socket.on("disconnect", ()=>{
