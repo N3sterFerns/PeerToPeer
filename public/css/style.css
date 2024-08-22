@@ -620,6 +620,10 @@ video {
   bottom: 0.5rem;
 }
 
+.bottom-20 {
+  bottom: 5rem;
+}
+
 .bottom-6 {
   bottom: 1.5rem;
 }
@@ -632,20 +636,12 @@ video {
   left: 0.5rem;
 }
 
+.right-3 {
+  right: 0.75rem;
+}
+
 .top-1\/2 {
   top: 50%;
-}
-
-.bottom-10 {
-  bottom: 2.5rem;
-}
-
-.bottom-14 {
-  bottom: 3.5rem;
-}
-
-.bottom-20 {
-  bottom: 5rem;
 }
 
 .z-\[222\] {
@@ -654,10 +650,6 @@ video {
 
 .z-\[9999\] {
   z-index: 9999;
-}
-
-.z-\[999\] {
-  z-index: 999;
 }
 
 .-mx-1\.5 {
@@ -711,10 +703,6 @@ video {
   display: inline-flex;
 }
 
-.grid {
-  display: grid;
-}
-
 .hidden {
   display: none;
 }
@@ -735,6 +723,10 @@ video {
   height: 2rem;
 }
 
+.h-\[20vh\] {
+  height: 20vh;
+}
+
 .h-\[40vh\] {
   height: 40vh;
 }
@@ -747,12 +739,12 @@ video {
   height: 100%;
 }
 
-.h-screen {
-  height: 100vh;
-}
-
 .h-svh {
   height: 100svh;
+}
+
+.w-1\/2 {
+  width: 50%;
 }
 
 .w-10 {
@@ -809,14 +801,14 @@ video {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
 .select-none {
   -webkit-user-select: none;
      -moz-user-select: none;
           user-select: none;
-}
-
-.grid-cols-1 {
-  grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 
 .flex-col {
@@ -941,11 +933,6 @@ video {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
-.bg-yellow-300 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(253 224 71 / var(--tw-bg-opacity));
-}
-
 .bg-zinc-300 {
   --tw-bg-opacity: 1;
   background-color: rgb(212 212 216 / var(--tw-bg-opacity));
@@ -959,6 +946,10 @@ video {
   background-image: linear-gradient(to right, var(--tw-gradient-stops));
 }
 
+.bg-local-profile {
+  background-image: url('/img/localprofile.png');
+}
+
 .from-violet-600 {
   --tw-gradient-from: #7c3aed var(--tw-gradient-from-position);
   --tw-gradient-to: rgb(124 58 237 / 0) var(--tw-gradient-to-position);
@@ -967,6 +958,14 @@ video {
 
 .to-indigo-600 {
   --tw-gradient-to: #4f46e5 var(--tw-gradient-to-position);
+}
+
+.bg-cover {
+  background-size: cover;
+}
+
+.bg-center {
+  background-position: center;
 }
 
 .object-cover {
@@ -1106,6 +1105,14 @@ video {
   color: rgb(113 113 122 / var(--tw-text-opacity));
 }
 
+.opacity-50 {
+  opacity: 0.5;
+}
+
+.opacity-75 {
+  opacity: 0.75;
+}
+
 .shadow {
   --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
@@ -1160,7 +1167,7 @@ video {
     height: 45vh;
   }
 
-  .md\:grid-cols-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .md\:w-\[30vh\] {
+    width: 30vh;
   }
 }

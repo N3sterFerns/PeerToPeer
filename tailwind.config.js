@@ -2,7 +2,11 @@
 module.exports = {
   content: ["./views/**/*.{ejs,html,js}"],
   theme: {
-    extend: {},
+    extend: {
+      backgroundImage: {
+        'local-profile': "url('/img/localprofile.png')",
+      },
+    },
   },
   plugins: [],
 }
