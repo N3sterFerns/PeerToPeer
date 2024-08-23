@@ -186,6 +186,7 @@ async function handleSignaling(data) {
             break;
         case "close":
             connectionClose()
+            break;
     }
 }
 
@@ -215,9 +216,9 @@ async function handleAnswer(answer) {
 
 // Event listeners for call control
 videoCall.addEventListener("click", () => {
-    if (inCall) return;
+    // if (inCall) return;
     socket.emit("startVideoCall", roomId);
-    videoCall.classList.add("select-none", "opacity-75")
+    // videoCall.classList.add("select-none", "opacity-75")
     // videoCallCon.classList.remove("hidden");
 });
 
