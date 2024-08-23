@@ -55,7 +55,7 @@ const chatVideoController = (io)=>{
         })
         
         socket.on("disconnect", ()=>{
-            console.log("User disconnected: ", socket.id);
+            // console.log("User disconnected: ", socket.id);
             const userIdIndex = waitingUsers.findIndex((user)=> user.id === socket.id)
             waitingUsers.splice(userIdIndex, 1)
 

@@ -2,6 +2,7 @@ const notifyMsg = document.querySelector(".nobody")
 const chatPage = document.querySelector("#chatPage")
 const msgContainer = document.querySelector("#msgContainer")
 const inputMsg = document.querySelector("#msg")
+const sendBtn = document.querySelector("#send")
 const localVideo = document.querySelector("#localVideo")
 const remoteVideo = document.querySelector("#remoteVideo")
 const videoCallCon = document.querySelector("#video-call-con")
@@ -41,6 +42,9 @@ socket.emit("joinedRoom")
 socket.on("joined", (id)=>{
     roomId = id;
     videoCall.classList.remove("select-none", "opacity-75")
+    sendBtn.removeAttribute("disabled", "")
+    sendBtn.classList.remove("opacity-40")
+    inputMsg.removeAttribute("disabled", "")
 })
 
 
