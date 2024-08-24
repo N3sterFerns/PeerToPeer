@@ -45,8 +45,9 @@ socket.emit("joinedRoom")
 socket.on("joined", (id)=>{
     roomId = id;
     videoCall.classList.remove("select-none", "opacity-75")
-    inputMsg.removeAttribute("disabled", "")
     sendBtn.removeAttribute("disabled", "")
+    sendBtn.classList.remove("opacity-40")
+    inputMsg.removeAttribute("disabled", "")
 })
 
 
@@ -188,6 +189,7 @@ async function handleSignaling(data) {
             break;
         case "close":
             connectionClose()
+            break;
     }
 }
 
