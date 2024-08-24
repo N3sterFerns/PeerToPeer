@@ -20,12 +20,10 @@ const showVideo = document.querySelector("#showVideo")
 const hideVideo = document.querySelector("#hideVideo")
 const hideVideoIcon = document.querySelector("#hideVideoIcon")
 
-// const mainPage = document.querySelector("#mainPage")
-// const {showDangerToast} = require('./alert.js')
 
-// document.addEventListener('contextmenu', function(event) {
-//     event.preventDefault();
-// });
+document.addEventListener('contextmenu', function(event) {
+    event.preventDefault();
+});
 
 let socket = io()
 let roomId;
