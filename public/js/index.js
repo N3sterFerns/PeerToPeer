@@ -2,6 +2,7 @@ const notifyMsg = document.querySelector(".nobody")
 const chatPage = document.querySelector("#chatPage")
 const msgContainer = document.querySelector("#msgContainer")
 const inputMsg = document.querySelector("#msg")
+const sendBtn = document.querySelector("#send")
 const localVideo = document.querySelector("#localVideo")
 const remoteVideo = document.querySelector("#remoteVideo")
 const videoCallCon = document.querySelector("#video-call-con")
@@ -22,6 +23,9 @@ const hideVideoIcon = document.querySelector("#hideVideoIcon")
 // const mainPage = document.querySelector("#mainPage")
 // const {showDangerToast} = require('./alert.js')
 
+// document.addEventListener('contextmenu', function(event) {
+//     event.preventDefault();
+// });
 
 let socket = io()
 let roomId;
@@ -41,6 +45,8 @@ socket.emit("joinedRoom")
 socket.on("joined", (id)=>{
     roomId = id;
     videoCall.classList.remove("select-none", "opacity-75")
+    inputMsg.removeAttribute("disabled", "")
+    sendBtn.removeAttribute("disabled", "")
 })
 
 
@@ -211,9 +217,9 @@ async function handleAnswer(answer) {
 
 // Event listeners for call control
 videoCall.addEventListener("click", () => {
-    if (inCall) return;
+    // if (inCall) return;
     socket.emit("startVideoCall", roomId);
-    videoCall.classList.add("select-none", "opacity-75")
+    // videoCall.classList.add("select-none", "opacity-75")
     // videoCallCon.classList.remove("hidden");
 });
 
