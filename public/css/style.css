@@ -685,8 +685,8 @@ video {
   height: 20vh;
 }
 
-.h-\[40vh\] {
-  height: 40vh;
+.h-\[45vh\] {
+  height: 45vh;
 }
 
 .h-dvh {
@@ -1008,16 +1008,16 @@ video {
   color: rgb(113 113 122 / var(--tw-text-opacity));
 }
 
-.opacity-75 {
-  opacity: 0.75;
-}
-
-.opacity-30 {
-  opacity: 0.3;
+.underline {
+  text-decoration-line: underline;
 }
 
 .opacity-40 {
   opacity: 0.4;
+}
+
+.opacity-75 {
+  opacity: 0.75;
 }
 
 .shadow {
